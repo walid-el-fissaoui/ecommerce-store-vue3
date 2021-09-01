@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
+/* Start Global Styles  */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+body {
+  @apply font-inter;
+}
+*:focus-visible {
+  outline: none;
+}
+/* End Global Styles  */
+/* Start Global Components */
+.btn {
+  @apply inline-flex text-sm uppercase font-bold py-4 px-8 tracking-widest items-center;
+}
+.btn-black {
+  @apply text-white bg-black;
+}
+.btn .arrow-right::after {
+  font-family: "Font Awesome 5 Free";
+  content: "\f30b";
+  @apply ml-2 text-lg;
+}
+.main-container {
+  @apply container mx-auto px-4;
+}
+/* End Global Components */
 @tailwind utilities;
