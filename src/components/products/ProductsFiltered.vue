@@ -2,33 +2,71 @@
   <div class="main-container py-28">
     <div class="filter-controls">
       <ul>
-        <li class="filter" :class="isActive === 1 ? 'active' : ''" @click="activate(1)">New Arrivals</li>
-        <li class="filter" :class="isActive === 2 ? 'active' : ''" @click="activate(2)">Best Sales</li>
-        <li class="filter" :class="isActive === 3 ? 'active' : ''" @click="activate(3)">Top Rated</li>
+        <li
+          class="filter"
+          :class="isActive === 1 ? 'active' : ''"
+          @click="activate(1)"
+        >
+          New Arrivals
+        </li>
+        <li
+          class="filter"
+          :class="isActive === 2 ? 'active' : ''"
+          @click="activate(2)"
+        >
+          Best Sales
+        </li>
+        <li
+          class="filter"
+          :class="isActive === 3 ? 'active' : ''"
+          @click="activate(3)"
+        >
+          Top Rated
+        </li>
       </ul>
     </div>
     <div class="products-container">
-      <new-arrival-products v-if="isActive === 1" />
-      <best-sales-products  v-if="isActive === 2" />
-      <top-rated-products   v-if="isActive === 3" />
+      <transition-group name="list">
+        <product-card v-for="product in products" :key="product.id">
+          <template #image>
+            <img :src="product.image" alt="product-image" />
+          </template>
+          <template #title>
+            {{ product.title }} {{product.id}}
+          </template>
+          <template #price>
+            {{ product.price }}
+          </template>
+          <template #colors>
+            <li
+              v-for="(color, index) in product.colors"
+              :key="index"
+              class="color"
+              :class="'bg-' + color"
+            ></li>
+          </template>
+        </product-card>
+      </transition-group>
     </div>
   </div>
 </template>
 
 <script>
-import NewArrivalProducts from "./NewArrivalProducts.vue";
-import BestSalesProducts from "./BestSalesProducts.vue";
-import TopRatedProducts from "./TopRatedProducts.vue";
-import {ref} from "vue";
+import ProductCard from "./ProductCard.vue";
+import data from "../../assets/data.js";
+import { ref } from "vue";
 export default {
-  components: { NewArrivalProducts,BestSalesProducts,TopRatedProducts },
+  components: { ProductCard },
   setup() {
     const isActive = ref(1);
+    const products = ref(data.filter((item) => item.group === (isActive.value == 1 ? 'new' : isActive.value == 2 ? 'best' : 'top')));
     function activate(index) {
       isActive.value = index;
+      products.value = data;
+      products.value = products.value.filter((item) => item.group === (index == 1 ? 'new' : index == 2 ? 'best' : 'top'));
     }
-    return {isActive,activate}
-  }
+    return { isActive, activate, products };
+  },
 };
 </script>
 
@@ -80,5 +118,14 @@ export default {
   .products-container .product-card {
     @apply w-3/12;
   }
+}
+.list-enter-active,
+.list-leave-active {
+  transition: all 1s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
 }
 </style>

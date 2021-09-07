@@ -35,8 +35,8 @@
           >
         </div>
         <ul class="navbar-navs">
-          <li><a href="#">Home</a></li>
-          <li><a href="#">Shop</a></li>
+          <li><router-link to="/">Home</router-link></li>
+          <li><router-link to="/Shop">Shop</router-link></li>
           <li><a href="#">About Us</a></li>
           <li><a href="#">Contact</a></li>
         </ul>
