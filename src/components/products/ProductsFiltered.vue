@@ -53,7 +53,7 @@
 
 <script>
 import ProductCard from "./ProductCard.vue";
-import data from "../../assets/data.js";
+import data from "../../assets/dummy data/FilteredProducts.js";
 import { ref } from "vue";
 export default {
   components: { ProductCard },

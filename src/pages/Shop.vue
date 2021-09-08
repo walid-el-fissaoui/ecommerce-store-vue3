@@ -43,23 +43,8 @@
                 </div>
                 <div class="panel-body">
                   <ul>
-                    <li>
-                      <a href="">Men <span>(20)</span></a>
-                    </li>
-                    <li>
-                      <a href="">Women <span>(20)</span></a>
-                    </li>
-                    <li>
-                      <a href="">Bags <span>(20)</span></a>
-                    </li>
-                    <li>
-                      <a href="">Clothing <span>(20)</span></a>
-                    </li>
-                    <li>
-                      <a href="">Shoses <span>(20)</span></a>
-                    </li>
-                    <li>
-                      <a href="">Kids <span>(20)</span></a>
+                    <li v-for="category in categories" :key="category.id">
+                      <a @click="filterByCategory(category.id)">{{category.name}}<span> ({{category.count}}) </span></a>
                     </li>
                   </ul>
                 </div>
@@ -70,17 +55,8 @@
                 </div>
                 <div class="panel-body">
                   <ul>
-                    <li>
-                      <a href="">Louis Vuitton <span>(20)</span></a>
-                    </li>
-                    <li>
-                      <a href="">Chanel <span>(20)</span></a>
-                    </li>
-                    <li>
-                      <a href="">Hermes <span>(20)</span></a>
-                    </li>
-                    <li>
-                      <a href="">Gucci <span>(20)</span></a>
+                    <li v-for="brand in brands" :key="brand.id">
+                      <a @click="filterByBrand(brand.id)">{{brand.name}}<span> ({{brand.count}}) </span></a>
                     </li>
                   </ul>
                 </div>
@@ -118,14 +94,24 @@
 
 <script>
 import ProductCard from "../components/products/ProductCard.vue";
-import data from "../assets/data.js";
+import data from "../assets/dummy data/ShopProducts.js";
+import {ref} from "vue";
 export default {
   components: { ProductCard },
-  data() {
-    return {
-      products: data,
-    };
-  },
+  setup() {
+    const products = ref(data.products);
+    const categories = ref(data.categories);
+    const brands = ref(data.brands);
+    function filterByCategory(id) {
+      products.value = data.products;
+      products.value = products.value.filter((item) => item.category === id);
+    }
+      function filterByBrand(id) {
+      products.value = data.products;
+      products.value = products.value.filter((item) => item.brand === id);
+    }
+    return {products,categories,brands,filterByCategory,filterByBrand}
+  }
 };
 </script>
 
@@ -224,7 +210,7 @@ export default {
   ul
   li
   a {
-  @apply text-custom-color-3 capitalize font-normal hover:text-black block;
+  @apply text-custom-color-3 capitalize font-normal hover:text-black block cursor-pointer;
 }
 .shop .shop-container .shop-products {
   @apply w-full px-4;
