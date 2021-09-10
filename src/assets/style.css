@@ -17,6 +17,9 @@ body {
 .btn-black {
   @apply text-white bg-black;
 }
+.btn-white {
+  @apply text-black bg-white border;
+}
 .btn .arrow-right::after {
   font-family: "Font Awesome 5 Free";
   content: "\f30b";
