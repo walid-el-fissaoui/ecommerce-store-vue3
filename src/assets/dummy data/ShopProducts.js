@@ -2,24 +2,140 @@ export default
 {
     products: [
         {
-            id: "#0",
-            image: "/img/product-image-1.7450203f.jpg",
-            title: "Lorem, ipsum New.",
-            price: "$13.3",
-            colors: ["blue-400", "red-400", "green-400"],
-            rating: "3",
-            category: "01",
-            brand: "01"
+            page: 1,
+            per_page: 6,
+            total: 12,
+            total_pages: 2,
+            data: [
+                {
+                    id: "#0",
+                    image: "../assets/images/slide-1.png",
+                    title: "Lorem, ipsum New.",
+                    price: "$13.3",
+                    colors: ["blue-400", "red-400", "green-400"],
+                    rating: "3",
+                    category: "01",
+                    brand: "01"
+                },
+                {
+                    id: "#1",
+                    image: "../assets/images/slide-1.png",
+                    title: "Lorem, ipsum New.",
+                    price: "$13.3",
+                    colors: ["blue-400", "red-400", "green-400"],
+                    rating: "3",
+                    category: "02",
+                    brand: "02"
+                },
+                {
+                    id: "#2",
+                    image: "../assets/images/slide-1.png",
+                    title: "Lorem, ipsum New.",
+                    price: "$13.3",
+                    colors: ["blue-400", "red-400", "green-400"],
+                    rating: "3",
+                    category: "02",
+                    brand: "02"
+                },
+                {
+                    id: "#3",
+                    image: "../assets/images/slide-1.png",
+                    title: "Lorem, ipsum New.",
+                    price: "$13.3",
+                    colors: ["blue-400", "red-400", "green-400"],
+                    rating: "3",
+                    category: "02",
+                    brand: "02"
+                },
+                {
+                    id: "#4",
+                    image: "../assets/images/slide-1.png",
+                    title: "Lorem, ipsum New.",
+                    price: "$13.3",
+                    colors: ["blue-400", "red-400", "green-400"],
+                    rating: "3",
+                    category: "02",
+                    brand: "02"
+                },
+                {
+                    id: "#5",
+                    image: "../assets/images/slide-1.png",
+                    title: "Lorem, ipsum New.",
+                    price: "$13.3",
+                    colors: ["blue-400", "red-400", "green-400"],
+                    rating: "3",
+                    category: "02",
+                    brand: "02"
+                },
+            ]
         },
         {
-            id: "#1",
-            image: "/img/product-image-1.7450203f.jpg",
-            title: "Lorem, ipsum New.",
-            price: "$13.3",
-            colors: ["blue-400", "red-400", "green-400"],
-            rating: "3",
-            category: "02",
-            brand: "02"
+            page: 2,
+            per_page: 6,
+            total: 12,
+            total_pages: 2,
+            data: [
+                {
+                    id: "#6",
+                    image: "../assets/images/slide-1.png",
+                    title: "Lorem, ipsum New.",
+                    price: "$13.3",
+                    colors: ["blue-400", "red-400", "green-400"],
+                    rating: "3",
+                    category: "02",
+                    brand: "02"
+                },
+                {
+                    id: "#7",
+                    image: "../assets/images/slide-1.png",
+                    title: "Lorem, ipsum New.",
+                    price: "$13.3",
+                    colors: ["blue-400", "red-400", "green-400"],
+                    rating: "3",
+                    category: "02",
+                    brand: "02"
+                },
+                {
+                    id: "#8",
+                    image: "../assets/images/slide-1.png",
+                    title: "Lorem, ipsum New.",
+                    price: "$13.3",
+                    colors: ["blue-400", "red-400", "green-400"],
+                    rating: "3",
+                    category: "02",
+                    brand: "02"
+                },
+                {
+                    id: "#9",
+                    image: "../assets/images/slide-1.png",
+                    title: "Lorem, ipsum New.",
+                    price: "$13.3",
+                    colors: ["blue-400", "red-400", "green-400"],
+                    rating: "3",
+                    category: "02",
+                    brand: "02"
+                },
+                {
+                    id: "#10",
+                    image: "../assets/images/slide-1.png",
+                    title: "Lorem, ipsum New.",
+                    price: "$13.3",
+                    colors: ["blue-400", "red-400", "green-400"],
+                    rating: "3",
+                    category: "02",
+                    brand: "02"
+                },
+                {
+                    id: "#11",
+                    image: "../assets/images/slide-1.png",
+                    title: "Lorem, ipsum New.",
+                    price: "$13.3",
+                    colors: ["blue-400", "red-400", "green-400"],
+                    rating: "3",
+                    category: "02",
+                    brand: "02"
+                },
+            ]
         }
     ],
     categories: [

@@ -67,7 +67,8 @@
             <div class="products-container">
               <product-card v-for="product in products" :key="product.id">
                 <template #image>
-                  <img :src="product.image" alt="product-image" />
+                  <!-- <img :src="product.image" alt="product-image" /> -->
+                  <img src="../assets/images/product-image-1.jpg" alt="product-image" />
                 </template>
                 <template #title>
                   {{ product.title }} {{ product.id }}
@@ -85,6 +86,13 @@
                 </template>
               </product-card>
             </div>
+            <div class="pagination-controls">
+              <ul>
+                <li v-for="num in (totalPages <= 4 ? totalPages : 3 )" :key="num" :class="(num == page + 1) ? 'active' : ''" @click="changePage(num)">{{num}}</li>
+                <span v-if="totalPages > 4">...</span>
+                <li v-if="totalPages > 4">{{totalPages}}</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -99,18 +107,25 @@ import {ref} from "vue";
 export default {
   components: { ProductCard },
   setup() {
-    const products = ref(data.products);
+    const page = ref(0);
+    const products = ref(data.products[page.value].data);
     const categories = ref(data.categories);
     const brands = ref(data.brands);
+    const totalPages = ref(data.products[0].total_pages);
+
     function filterByCategory(id) {
-      products.value = data.products;
+      products.value = data.products[page.value].data;
       products.value = products.value.filter((item) => item.category === id);
     }
       function filterByBrand(id) {
-      products.value = data.products;
+      products.value = data.products[page.value].data;
       products.value = products.value.filter((item) => item.brand === id);
     }
-    return {products,categories,brands,filterByCategory,filterByBrand}
+    function changePage(num) {
+      products.value = data.products[num - 1].data;
+      page.value = num - 1;
+    }
+    return {products,categories,brands,filterByCategory,filterByBrand,totalPages,changePage,page}
   }
 };
 </script>
@@ -235,5 +250,18 @@ export default {
   .shop .shop-container .shop-products .products-container .product-card {
     @apply w-4/12 px-4;
   }
+}
+.shop .shop-container .shop-products .pagination-controls ul {
+  @apply flex justify-center;
+}
+.shop .shop-container .shop-products .pagination-controls ul li,
+.shop .shop-container .shop-products .pagination-controls ul span {
+    width: 30px;
+    height: 30px;
+    @apply flex items-center justify-center cursor-pointer font-bold mx-1;
+}
+.shop .shop-container .shop-products .pagination-controls ul li:hover,
+.shop .shop-container .shop-products .pagination-controls ul li.active {
+  @apply border-2 border-black rounded-full;
 }
 </style>
