@@ -5,7 +5,7 @@
         <div class="top-bar-container">
           <p>Free shipping, 30-day return or refund guarantee.</p>
           <div class="auth-box">
-            <a href="">sign in</a>
+            <router-link to="/sign-in">sign in</router-link>
             <span> / </span>
             <a href="">sign up</a>
           </div>
