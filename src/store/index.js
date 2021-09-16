@@ -1,9 +1,13 @@
 import { createStore } from 'vuex'
+import auth from './modules/authentication'
 
 const store = createStore({
+    modules: {
+        auth
+    },
     state() {
         return {
-            count: 0
+            count: 1
         }
     },
     mutations: {
