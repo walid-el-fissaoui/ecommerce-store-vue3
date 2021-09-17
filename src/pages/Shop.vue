@@ -145,7 +145,7 @@
 <script>
 import ProductCard from "../components/products/ProductCard.vue";
 import { onMounted, ref } from "vue";
-import axios from "axios";
+import axios from "../plugins/axios";
 export default {
   components: { ProductCard },
   setup() {
@@ -165,7 +165,7 @@ export default {
     // }
     function changePage(num) {
       axios
-        .get("http://127.0.0.1:8000/api/products", { params: { page: num } })
+        .get("products", { params: { page: num } })
         .then((response) => {
           products.value = response.data;
           page.value = num;
@@ -174,7 +174,7 @@ export default {
     }
     onMounted(() => {
       axios
-        .get("http://127.0.0.1:8000/api/products")
+        .get("products")
         .then((response) => {
           products.value = response.data;
           totalPages.value = response.data.meta.last_page;

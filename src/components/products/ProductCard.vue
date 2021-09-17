@@ -149,7 +149,7 @@ export default {};
   @apply w-full order-3 flex mb-2;
 }
 .product-card .card-content .product-price {
-  @apply w-6/12 flex-grow block text-left order-4 font-bold text-lg;
+  @apply w-6/12 block text-left order-4 font-bold text-lg;
 }
 .product-card .card-content .product-available-colors {
   @apply w-3/12 order-5 items-center justify-between hidden;
@@ -165,6 +165,9 @@ export default {};
   @apply block;
 }
 .product-card:hover .card-content .product-available-colors {
-  @apply flex;
+  @apply flex flex-grow justify-end;
+}
+.product-card:hover .card-content .product-available-colors li {
+  @apply ml-1;
 }
 </style>

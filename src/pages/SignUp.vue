@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from "../plugins/axios";
 import { ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from 'vue-router'
@@ -75,7 +75,7 @@ export default {
         password_confirmation: passwordConfirmation.value,
       };
       axios
-        .post("http://127.0.0.1:8000/api/register", data)
+        .post("register", data)
         .then((response) => {
           console.log(response);
           store.commit("setUserToken", { user_token: response.data.api_token });

@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from "../../plugins/axios";
 export default {
   computed: {
     userToken() {
@@ -111,7 +111,7 @@ export default {
         }
       }
       axios
-        .post("http://127.0.0.1:8000/api/logout",{token: this.userToken},config)
+        .post("logout",{token: this.userToken},config)
         .then(
           () => {
             this.$store.commit("setUserToken",{user_token: null});

@@ -59,7 +59,7 @@ export default {
         password: password.value,
       };
       axios
-        .post("http://127.0.0.1:8000/api/login", credentials)
+        .post("login", credentials)
         .then((response) => {
           store.commit("setUserToken", { user_token: response.data.api_token });
           store.commit("setUser", { user: response.data.user });
