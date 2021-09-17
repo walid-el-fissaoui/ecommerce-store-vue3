@@ -44,7 +44,10 @@
                 <div class="panel-body">
                   <ul>
                     <li v-for="category in categories" :key="category.id">
-                      <a @click="filterByCategory(category.id)">{{category.name}}<span> ({{category.count}}) </span></a>
+                      <a @click="filterByCategory(category.id)"
+                        >{{ category.name
+                        }}<span> ({{ category.count }}) </span></a
+                      >
                     </li>
                   </ul>
                 </div>
@@ -56,7 +59,9 @@
                 <div class="panel-body">
                   <ul>
                     <li v-for="brand in brands" :key="brand.id">
-                      <a @click="filterByBrand(brand.id)">{{brand.name}}<span> ({{brand.count}}) </span></a>
+                      <a @click="filterByBrand(brand.id)"
+                        >{{ brand.name }}<span> ({{ brand.count }}) </span></a
+                      >
                     </li>
                   </ul>
                 </div>
@@ -65,10 +70,12 @@
           </div>
           <div class="shop-products">
             <div class="products-container">
-              <product-card v-for="product in products" :key="product.id">
+              <product-card v-for="product in products.data" :key="product.id">
                 <template #image>
-                  <!-- <img :src="product.image" alt="product-image" /> -->
-                  <img src="../assets/images/product-image-1.jpg" alt="product-image" />
+                  <img
+                    :src="product.image !== null ? product.image.url : ' '"
+                    alt="product-image"
+                  />
                 </template>
                 <template #title>
                   {{ product.title }} {{ product.id }}
@@ -81,16 +88,51 @@
                     v-for="(color, index) in product.colors"
                     :key="index"
                     class="color"
-                    :class="'bg-' + color"
+                    :style="'background-color:' + color.hex_code"
                   ></li>
                 </template>
               </product-card>
             </div>
             <div class="pagination-controls">
               <ul>
-                <li v-for="num in (totalPages <= 4 ? totalPages : 3 )" :key="num" :class="(num == page + 1) ? 'active' : ''" @click="changePage(num)">{{num}}</li>
-                <span v-if="totalPages > 4">...</span>
-                <li v-if="totalPages > 4">{{totalPages}}</li>
+                <li
+                  v-if="page !== 1"
+                  @click="changePage(page - 1)"
+                >
+                  <i class="fas fa-chevron-left mr-2"></i>Prev
+                </li>
+                <li
+                  v-for="num in totalPages"
+                  :key="num"
+                  class="number"
+                  :class="[
+                    num == page ? 'active' : '',
+                    num !== 1 &&
+                    num !== totalPages &&
+                    num !== page &&
+                    num !== page - 1 &&
+                    num !== page + 1
+                      ? 'hidden'
+                      : 'flex',
+                    num === page - 1 && num !== 1 && num !== 2 ? 'prev' : '',
+                    num === page + 1 &&
+                    num !== totalPages &&
+                    num !== totalPages - 1
+                      ? 'next'
+                      : '',
+                  ]"
+                  @click="changePage(num)"
+                >
+                  <span>
+                    {{ num }}
+                  </span>
+                </li>
+                <li
+                  v-if="page !== totalPages"
+                  @click="changePage(page + 1)"
+                >
+                  Next<i class="fas fa-chevron-right ml-2"></i>
+                </li>
               </ul>
             </div>
           </div>
@@ -102,31 +144,46 @@
 
 <script>
 import ProductCard from "../components/products/ProductCard.vue";
-import data from "../assets/dummy data/ShopProducts.js";
-import {ref} from "vue";
+import { onMounted, ref } from "vue";
+import axios from "axios";
 export default {
   components: { ProductCard },
   setup() {
     const page = ref(0);
-    const products = ref(data.products[page.value].data);
-    const categories = ref(data.categories);
-    const brands = ref(data.brands);
-    const totalPages = ref(data.products[0].total_pages);
+    const products = ref({});
+    // const categories = ref(data.categories);
+    // const brands = ref(data.brands);
+    const totalPages = ref(0);
 
-    function filterByCategory(id) {
-      products.value = data.products[page.value].data;
-      products.value = products.value.filter((item) => item.category === id);
-    }
-      function filterByBrand(id) {
-      products.value = data.products[page.value].data;
-      products.value = products.value.filter((item) => item.brand === id);
-    }
+    // function filterByCategory(id) {
+    //   products.value = data.products[page.value].data;
+    //   products.value = products.value.filter((item) => item.category === id);
+    // }
+    //   function filterByBrand(id) {
+    //   products.value = data.products[page.value].data;
+    //   products.value = products.value.filter((item) => item.brand === id);
+    // }
     function changePage(num) {
-      products.value = data.products[num - 1].data;
-      page.value = num - 1;
+      axios
+        .get("http://127.0.0.1:8000/api/products", { params: { page: num } })
+        .then((response) => {
+          products.value = response.data;
+          page.value = num;
+        })
+        .catch((errors) => console.log(errors));
     }
-    return {products,categories,brands,filterByCategory,filterByBrand,totalPages,changePage,page}
-  }
+    onMounted(() => {
+      axios
+        .get("http://127.0.0.1:8000/api/products")
+        .then((response) => {
+          products.value = response.data;
+          totalPages.value = response.data.meta.last_page;
+          page.value = response.data.meta.current_page;
+        })
+        .catch((errors) => console.log(errors));
+    });
+    return { products, page, totalPages, changePage };
+  },
 };
 </script>
 
@@ -252,16 +309,40 @@ export default {
   }
 }
 .shop .shop-container .shop-products .pagination-controls ul {
-  @apply flex justify-center;
+  @apply flex justify-center items-center;
 }
-.shop .shop-container .shop-products .pagination-controls ul li,
-.shop .shop-container .shop-products .pagination-controls ul span {
-    width: 30px;
-    height: 30px;
-    @apply flex items-center justify-center cursor-pointer font-bold mx-1;
+.shop .shop-container .shop-products .pagination-controls ul li span {
+  width: 30px;
+  height: 30px;
 }
-.shop .shop-container .shop-products .pagination-controls ul li:hover,
-.shop .shop-container .shop-products .pagination-controls ul li.active {
+.shop
+  .shop-container
+  .shop-products
+  .pagination-controls
+  ul
+  li.number.next::after,
+.shop
+  .shop-container
+  .shop-products
+  .pagination-controls
+  ul
+  li.number.prev::before {
+  content: "...";
+  width: 30px;
+  @apply text-center font-bold;
+}
+.shop .shop-container .shop-products .pagination-controls ul li:hover span,
+.shop .shop-container .shop-products .pagination-controls ul li.active span {
   @apply border-2 border-black rounded-full;
+}
+.shop .shop-container .shop-products .pagination-controls ul li:not(.number),
+.shop .shop-container .shop-products .pagination-controls ul li span {
+  @apply flex items-center justify-center cursor-pointer font-bold mx-1;
+}
+.shop .shop-container .shop-products .pagination-controls ul li:not(.number) {
+  @apply p-2;
+}
+.shop .shop-container .shop-products .pagination-controls ul li.number {
+  @apply items-center justify-center;
 }
 </style>
