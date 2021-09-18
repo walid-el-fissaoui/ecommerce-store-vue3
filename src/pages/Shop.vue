@@ -36,18 +36,55 @@
                 </button>
               </form>
             </div>
+            <div class="sidebar-filter">
+              <div>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M3 17V19H9V17H3ZM3 5V7H13V5H3ZM13 21V19H21V17H13V15H11V21H13ZM7 9V11H3V13H7V15H9V9H7ZM21 13V11H11V13H21ZM15 9H17V7H21V5H17V3H15V9Z"
+                    fill="#323232"
+                  />
+                </svg>
+                <h3>
+                  filter
+                </h3>
+              </div>
+              <div class="justify-end">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12.5 8C9.85 8 7.45 8.99 5.6 10.6L2 7V16H11L7.38 12.38C8.77 11.22 10.54 10.5 12.5 10.5C16.04 10.5 19.05 12.81 20.1 16L22.47 15.22C21.08 11.03 17.15 8 12.5 8Z"
+                    fill="#323232"
+                  />
+                </svg>
+                <h3>
+                  Clear
+                </h3>
+              </div>
+            </div>
+
             <div class="sidebar-accordion">
               <div class="panel">
                 <div class="panel-header">
                   <button>categories</button>
                 </div>
                 <div class="panel-body">
-                  <ul>
+                  <ul class="categories-list">
                     <li v-for="category in categories" :key="category.id">
                       <a @click="filterByCategory(category.id)"
-                        >{{ category.name
-                        }}<span> ({{ category.count }}) </span></a
-                      >
+                        >{{ category.title }}
+                        <span> ({{ category.products_count }}) </span>
+                      </a>
                     </li>
                   </ul>
                 </div>
@@ -57,13 +94,77 @@
                   <button>branding</button>
                 </div>
                 <div class="panel-body">
-                  <ul>
+                  <ul class="categories-list">
                     <li v-for="brand in brands" :key="brand.id">
                       <a @click="filterByBrand(brand.id)"
-                        >{{ brand.name }}<span> ({{ brand.count }}) </span></a
-                      >
+                        >{{ brand.title }}
+                        <span> ({{ brand.products_count }}) </span>
+                      </a>
                     </li>
                   </ul>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header">
+                  <button>sex</button>
+                </div>
+                <div class="panel-body">
+                  <ul class="categories-list">
+                    <li><a>Men</a></li>
+                    <li><a>Women</a></li>
+                    <li><a>Both</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header">
+                  <button>Colors</button>
+                </div>
+                <div class="panel-body">
+                  <ul class="colors-list">
+                    <li v-for="color in colors" :key="color.id">
+                      <a :style="'background-color :' + color.color_hex"></a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header">
+                  <button>Sizes</button>
+                </div>
+                <div class="panel-body">
+                  <ul class="sizes-list">
+                    <li v-for="size in sizes" :key="size.id">
+                      <a>{{ size.title }}</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header">
+                  <button>Price</button>
+                </div>
+                <div class="panel-body">
+                  <div class="filter-price">
+                    <div class="price-select-box">
+                      <label for="min-price">Min</label>
+                      <input
+                        type="number"
+                        min="0"
+                        name="min-price"
+                        id="min-price"
+                      />
+                    </div>
+                    <div class="price-select-box">
+                      <label for="max-price">Max</label>
+                      <input
+                        type="number"
+                        min="0"
+                        name="max-price"
+                        id="max-price"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -95,10 +196,7 @@
             </div>
             <div class="pagination-controls">
               <ul>
-                <li
-                  v-if="page !== 1"
-                  @click="changePage(page - 1)"
-                >
+                <li v-if="page !== 1" @click="changePage(page - 1)">
                   <i class="fas fa-chevron-left mr-2"></i>Prev
                 </li>
                 <li
@@ -127,10 +225,7 @@
                     {{ num }}
                   </span>
                 </li>
-                <li
-                  v-if="page !== totalPages"
-                  @click="changePage(page + 1)"
-                >
+                <li v-if="page !== totalPages" @click="changePage(page + 1)">
                   Next<i class="fas fa-chevron-right ml-2"></i>
                 </li>
               </ul>
@@ -151,9 +246,11 @@ export default {
   setup() {
     const page = ref(0);
     const products = ref({});
-    // const categories = ref(data.categories);
-    // const brands = ref(data.brands);
     const totalPages = ref(0);
+    const categories = ref({});
+    const brands = ref({});
+    const colors = ref({});
+    const sizes = ref({});
 
     // function filterByCategory(id) {
     //   products.value = data.products[page.value].data;
@@ -181,8 +278,41 @@ export default {
           page.value = response.data.meta.current_page;
         })
         .catch((errors) => console.log(errors));
+      axios
+        .get("categories")
+        .then((response) => {
+          categories.value = response.data;
+        })
+        .catch((errors) => console.log(errors));
+      axios
+        .get("brands")
+        .then((response) => {
+          brands.value = response.data;
+        })
+        .catch((errors) => console.log(errors));
+      axios
+        .get("colors")
+        .then((response) => {
+          colors.value = response.data;
+        })
+        .catch((errors) => console.log(errors));
+      axios
+        .get("sizes")
+        .then((response) => {
+          sizes.value = response.data;
+        })
+        .catch((errors) => console.log(errors));
     });
-    return { products, page, totalPages, changePage };
+    return {
+      products,
+      page,
+      totalPages,
+      categories,
+      brands,
+      colors,
+      sizes,
+      changePage,
+    };
   },
 };
 </script>
@@ -229,6 +359,15 @@ export default {
   transform: translateY(-50%);
   @apply absolute top-1/2 right-2 text-custom-color-3 placeholder-custom-color-3;
 }
+.shop .shop-container .shop-sidebar .sidebar-filter {
+  @apply flex w-full justify-between mb-6;
+}
+.shop .shop-container .shop-sidebar .sidebar-filter > div {
+  @apply flex w-6/12 cursor-pointer;
+}
+.shop .shop-container .shop-sidebar .sidebar-filter h3 {
+  @apply font-bold text-base text-black uppercase ml-2;
+}
 .shop .shop-container .shop-sidebar .sidebar-accordion .panel {
   @apply mb-6;
 }
@@ -269,7 +408,7 @@ export default {
   .sidebar-accordion
   .panel
   .panel-body
-  ul
+  ul.categories-list
   li {
   @apply py-2;
 }
@@ -279,10 +418,104 @@ export default {
   .sidebar-accordion
   .panel
   .panel-body
-  ul
+  ul.categories-list
   li
   a {
   @apply text-custom-color-3 capitalize font-normal hover:text-black block cursor-pointer;
+}
+.shop
+  .shop-container
+  .shop-sidebar
+  .sidebar-accordion
+  .panel
+  .panel-body
+  ul.colors-list,
+.shop
+  .shop-container
+  .shop-sidebar
+  .sidebar-accordion
+  .panel
+  .panel-body
+  ul.sizes-list {
+  @apply flex flex-wrap;
+}
+.shop
+  .shop-container
+  .shop-sidebar
+  .sidebar-accordion
+  .panel
+  .panel-body
+  ul.colors-list
+  li
+  a {
+  width: 30px;
+  height: 30px;
+  @apply block cursor-pointer mr-4 rounded-full;
+}
+.shop
+  .shop-container
+  .shop-sidebar
+  .sidebar-accordion
+  .panel
+  .panel-body
+  ul.colors-list
+  li.active
+  a {
+  @apply border-2 border-white ring-1 ring-custom-color-6;
+}
+.shop
+  .shop-container
+  .shop-sidebar
+  .sidebar-accordion
+  .panel
+  .panel-body
+  ul.sizes-list
+  li
+  a {
+  width: 50px;
+  height: 30px;
+  @apply flex justify-center items-center mr-4 mb-4 cursor-pointer uppercase border;
+}
+.shop
+  .shop-container
+  .shop-sidebar
+  .sidebar-accordion
+  .panel
+  .panel-body
+  .filter-price {
+  @apply flex justify-between items-center;
+}
+.shop
+  .shop-container
+  .shop-sidebar
+  .sidebar-accordion
+  .panel
+  .panel-body
+  .filter-price
+  .price-select-box {
+  @apply w-5/12 flex justify-between items-center;
+}
+.shop
+  .shop-container
+  .shop-sidebar
+  .sidebar-accordion
+  .panel
+  .panel-body
+  .filter-price
+  .price-select-box
+  label {
+  @apply w-auto mr-4;
+}
+.shop
+  .shop-container
+  .shop-sidebar
+  .sidebar-accordion
+  .panel
+  .panel-body
+  .filter-price
+  .price-select-box
+  input {
+  @apply border p-1 rounded w-5/12 flex-grow;
 }
 .shop .shop-container .shop-products {
   @apply w-full px-4;
