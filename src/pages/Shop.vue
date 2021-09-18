@@ -36,8 +36,8 @@
                 </button>
               </form>
             </div>
-            <div class="sidebar-filter">
-              <div>
+            <ul class="sidebar-filter">
+              <li :class="isFiltered ? 'active' : ''">
                 <svg
                   width="24"
                   height="24"
@@ -47,14 +47,11 @@
                 >
                   <path
                     d="M3 17V19H9V17H3ZM3 5V7H13V5H3ZM13 21V19H21V17H13V15H11V21H13ZM7 9V11H3V13H7V15H9V9H7ZM21 13V11H11V13H21ZM15 9H17V7H21V5H17V3H15V9Z"
-                    fill="#323232"
                   />
                 </svg>
-                <h3>
-                  filter
-                </h3>
-              </div>
-              <div class="justify-end">
+                <h3>filter</h3>
+              </li>
+              <li v-if="isFiltered" class="justify-end active" @click="clearFilters">
                 <svg
                   width="24"
                   height="24"
@@ -64,15 +61,11 @@
                 >
                   <path
                     d="M12.5 8C9.85 8 7.45 8.99 5.6 10.6L2 7V16H11L7.38 12.38C8.77 11.22 10.54 10.5 12.5 10.5C16.04 10.5 19.05 12.81 20.1 16L22.47 15.22C21.08 11.03 17.15 8 12.5 8Z"
-                    fill="#323232"
                   />
                 </svg>
-                <h3>
-                  Clear
-                </h3>
-              </div>
-            </div>
-
+                <h3>all</h3>
+              </li>
+            </ul>
             <div class="sidebar-accordion">
               <div class="panel">
                 <div class="panel-header">
@@ -80,9 +73,13 @@
                 </div>
                 <div class="panel-body">
                   <ul class="categories-list">
-                    <li v-for="category in categories" :key="category.id">
-                      <a @click="filterByCategory(category.id)"
-                        >{{ category.title }}
+                    <li
+                      v-for="category in categories"
+                      :key="category.id"
+                      :class="filters.categories.includes(category.id) ? 'active' : ''"
+                    >
+                      <a @click="toggleFilter('categories',category.id)">
+                        {{ category.title }}
                         <span> ({{ category.products_count }}) </span>
                       </a>
                     </li>
@@ -95,8 +92,8 @@
                 </div>
                 <div class="panel-body">
                   <ul class="categories-list">
-                    <li v-for="brand in brands" :key="brand.id">
-                      <a @click="filterByBrand(brand.id)"
+                    <li v-for="brand in brands" :key="brand.id" :class="filters.brands.includes(brand.id) ? 'active' : ''">
+                      <a @click="toggleFilter('brands',brand.id)"
                         >{{ brand.title }}
                         <span> ({{ brand.products_count }}) </span>
                       </a>
@@ -110,9 +107,8 @@
                 </div>
                 <div class="panel-body">
                   <ul class="categories-list">
-                    <li><a>Men</a></li>
-                    <li><a>Women</a></li>
-                    <li><a>Both</a></li>
+                    <li :class="filters.sex.includes(0) ? 'active' : ''" ><a @click="toggleFilter('sex',0)">Men</a></li>
+                    <li :class="filters.sex.includes(1) ? 'active' : ''" ><a @click="toggleFilter('sex',1)">Women</a></li>
                   </ul>
                 </div>
               </div>
@@ -122,8 +118,8 @@
                 </div>
                 <div class="panel-body">
                   <ul class="colors-list">
-                    <li v-for="color in colors" :key="color.id">
-                      <a :style="'background-color :' + color.color_hex"></a>
+                    <li v-for="color in colors" :key="color.id" :class="filters.colors.includes(color.id) ? 'active' : ''">
+                      <a @click="toggleFilter('colors',color.id)" :style="'background-color :' + color.color_hex"></a>
                     </li>
                   </ul>
                 </div>
@@ -134,8 +130,10 @@
                 </div>
                 <div class="panel-body">
                   <ul class="sizes-list">
-                    <li v-for="size in sizes" :key="size.id">
-                      <a>{{ size.title }}</a>
+                    <li v-for="size in sizes" :key="size.id" :class="filters.sizes.includes(size.id) ? 'active' : ''">
+                      <a @click="toggleFilter('sizes',size.id)">
+                        {{ size.title }}
+                      </a>
                     </li>
                   </ul>
                 </div>
@@ -153,6 +151,8 @@
                         min="0"
                         name="min-price"
                         id="min-price"
+                        @keyup.delete="handlePriceInput"
+                        v-model="filters.prices.min"
                       />
                     </div>
                     <div class="price-select-box">
@@ -162,6 +162,8 @@
                         min="0"
                         name="max-price"
                         id="max-price"
+                        @keyup.delete="handlePriceInput"
+                        v-model="filters.prices.max"
                       />
                     </div>
                   </div>
@@ -239,7 +241,7 @@
 
 <script>
 import ProductCard from "../components/products/ProductCard.vue";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import axios from "../plugins/axios";
 export default {
   components: { ProductCard },
@@ -251,15 +253,32 @@ export default {
     const brands = ref({});
     const colors = ref({});
     const sizes = ref({});
-
-    // function filterByCategory(id) {
-    //   products.value = data.products[page.value].data;
-    //   products.value = products.value.filter((item) => item.category === id);
-    // }
-    //   function filterByBrand(id) {
-    //   products.value = data.products[page.value].data;
-    //   products.value = products.value.filter((item) => item.brand === id);
-    // }
+    const filters = ref({
+      categories: [],
+      brands: [],
+      sex: [],
+      colors: [],
+      sizes: [],
+      prices: { min: null, max: null },
+    });
+    const isFiltered = computed(() => {
+      if(filters.value.categories.length === 0 && filters.value.brands.length === 0 && filters.value.colors.length === 0 && filters.value.sizes.length === 0 && filters.value.sex.length === 0 && filters.value.prices.min === null && filters.value.prices.max === null) {
+        return false
+      }
+      return true;
+    });
+    function handlePriceInput(e) {
+      if(e.target.id === 'max-price'){
+        if(e.target.value === '') {
+          filters.value.prices.max = null;
+        }
+      }
+      else {
+        if(e.target.value === '') {
+          filters.value.prices.min = null;
+        }
+      }
+    }
     function changePage(num) {
       axios
         .get("products", { params: { page: num } })
@@ -269,9 +288,69 @@ export default {
         })
         .catch((errors) => console.log(errors));
     }
+    function toggleFilter(filter,item) {
+      switch (filter) {
+        case 'categories':
+          if(filters.value.categories.includes(item)) {
+            filters.value.categories = filters.value.categories.filter((x) => x != item);
+          }
+          else 
+          {
+            filters.value.categories.push(item);
+          }
+          break;
+        case 'brands':
+          if(filters.value.brands.includes(item)) {
+            filters.value.brands = filters.value.brands.filter((x) => x != item);
+          }
+          else 
+          {
+            filters.value.brands.push(item);
+          }
+          break;
+        case 'sex':
+          if(filters.value.sex.includes(item)) {
+            filters.value.sex = filters.value.sex.filter((x) => x != item);
+          }
+          else 
+          {
+            filters.value.sex.push(item);
+          }
+          break;
+        case 'colors':
+          if(filters.value.colors.includes(item)) {
+            filters.value.colors = filters.value.colors.filter((x) => x != item);
+          }
+          else 
+          {
+            filters.value.colors.push(item);
+          }
+          break;
+        case 'sizes':
+          if(filters.value.sizes.includes(item)) {
+            filters.value.sizes = filters.value.sizes.filter((x) => x != item);
+          }
+          else 
+          {
+            filters.value.sizes.push(item);
+          }
+          break;
+      }
+    }
+    function clearFilters() {
+      Object.keys(filters.value).forEach(function(key) {
+        if(Array.isArray(filters.value[key])) {
+          filters.value[key] = [];
+        }
+        else {
+          filters.value[key].min = null;
+          filters.value[key].max = null;
+        }
+      });
+    }
     onMounted(() => {
       axios
-        .get("products")
+        .get("products",{params: {per_page : 12}})
         .then((response) => {
           products.value = response.data;
           totalPages.value = response.data.meta.last_page;
@@ -311,7 +390,12 @@ export default {
       brands,
       colors,
       sizes,
+      filters,
+      isFiltered,
+      handlePriceInput,
       changePage,
+      toggleFilter,
+      clearFilters
     };
   },
 };
@@ -362,11 +446,20 @@ export default {
 .shop .shop-container .shop-sidebar .sidebar-filter {
   @apply flex w-full justify-between mb-6;
 }
-.shop .shop-container .shop-sidebar .sidebar-filter > div {
+.shop .shop-container .shop-sidebar .sidebar-filter li {
   @apply flex w-6/12 cursor-pointer;
 }
+.shop .shop-container .shop-sidebar .sidebar-filter li svg {
+  fill: rgba(183, 183, 183);
+}
 .shop .shop-container .shop-sidebar .sidebar-filter h3 {
-  @apply font-bold text-base text-black uppercase ml-2;
+  @apply font-bold text-base text-custom-color-3 uppercase ml-2;
+}
+.shop .shop-container .shop-sidebar .sidebar-filter li.active h3 {
+  @apply text-black;
+}
+.shop .shop-container .shop-sidebar .sidebar-filter li.active svg {
+  fill: #000;
 }
 .shop .shop-container .shop-sidebar .sidebar-accordion .panel {
   @apply mb-6;
@@ -429,6 +522,17 @@ export default {
   .sidebar-accordion
   .panel
   .panel-body
+  ul.categories-list
+  li.active
+  a {
+  @apply text-black;
+}
+.shop
+  .shop-container
+  .shop-sidebar
+  .sidebar-accordion
+  .panel
+  .panel-body
   ul.colors-list,
 .shop
   .shop-container
@@ -476,6 +580,17 @@ export default {
   height: 30px;
   @apply flex justify-center items-center mr-4 mb-4 cursor-pointer uppercase border;
 }
+.shop
+  .shop-container
+  .shop-sidebar
+  .sidebar-accordion
+  .panel
+  .panel-body
+  ul.sizes-list
+  li.active
+  a {
+    @apply bg-black text-white;
+  }
 .shop
   .shop-container
   .shop-sidebar
