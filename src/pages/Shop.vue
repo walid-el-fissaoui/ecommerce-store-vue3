@@ -18,8 +18,8 @@
         <div class="flex flex-wrap">
           <div class="shop-sidebar">
             <div class="sidebar-search">
-              <form>
-                <input type="text" placeholder="Search..." />
+              <form @submit.prevent="filterProducts">
+                <input type="text" placeholder="Search..."  @keyup.delete="handleEmptyInputs" v-model="filters.title"/>
                 <button>
                   <svg
                     width="24"
@@ -107,8 +107,12 @@
                 </div>
                 <div class="panel-body">
                   <ul class="categories-list">
-                    <li :class="filters.sex.includes(0) ? 'active' : ''" ><a @click="toggleFilter('sex',0)">Men</a></li>
-                    <li :class="filters.sex.includes(1) ? 'active' : ''" ><a @click="toggleFilter('sex',1)">Women</a></li>
+                    <li v-for="sex in sexes" :key="sex.id" :class="filters.sexes.includes(sex.id) ? 'active' : ''">
+                      <a @click="toggleFilter('sexes',sex.id)"
+                        >{{ sex.title }}
+                        <span> ({{ sex.products_count }}) </span>
+                      </a>
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -151,7 +155,7 @@
                         min="0"
                         name="min-price"
                         id="min-price"
-                        @keyup.delete="handlePriceInput"
+                        @keyup.delete="handleEmptyInputs"
                         v-model="filters.prices.min"
                       />
                     </div>
@@ -162,7 +166,7 @@
                         min="0"
                         name="max-price"
                         id="max-price"
-                        @keyup.delete="handlePriceInput"
+                        @keyup.delete="handleEmptyInputs"
                         v-model="filters.prices.max"
                       />
                     </div>
@@ -172,6 +176,9 @@
             </div>
           </div>
           <div class="shop-products">
+            <div class="ml-7 mb-6">
+              <p class="text-custom-color-3">Total : <span>{{productsCount}}</span></p> 
+            </div>
             <div class="products-container">
               <product-card v-for="product in products.data" :key="product.id">
                 <template #image>
@@ -196,9 +203,9 @@
                 </template>
               </product-card>
             </div>
-            <div class="pagination-controls">
+            <div class="pagination-controls" v-if="totalPages > 1">
               <ul>
-                <li v-if="page !== 1" @click="changePage(page - 1)">
+                <li v-if="page !== 1 && totalPages > 2" @click="changePage(page - 1)">
                   <i class="fas fa-chevron-left mr-2"></i>Prev
                 </li>
                 <li
@@ -227,7 +234,7 @@
                     {{ num }}
                   </span>
                 </li>
-                <li v-if="page !== totalPages" @click="changePage(page + 1)">
+                <li v-if="page !== totalPages && totalPages > 2" @click="changePage(page + 1)">
                   Next<i class="fas fa-chevron-right ml-2"></i>
                 </li>
               </ul>
@@ -247,138 +254,152 @@ export default {
   components: { ProductCard },
   setup() {
     const page = ref(0);
-    const products = ref({});
     const totalPages = ref(0);
+    const perPage = ref(12);
+    const productsCount = ref(0);
+    const products = ref({});
     const categories = ref({});
     const brands = ref({});
     const colors = ref({});
     const sizes = ref({});
+    const sexes = ref({});
     const filters = ref({
-      categories: [],
-      brands: [],
-      sex: [],
-      colors: [],
-      sizes: [],
-      prices: { min: null, max: null },
+        title: null,
+        categories: [],
+        brands: [],
+        sexes: [],
+        colors: [],
+        sizes: [],
+        prices: { min: null, max: null },
     });
-    const queryFilters = ref({});
+    const requestParams = ref({});
+
     const isFiltered = computed(() => {
-      if(filters.value.categories.length === 0 && filters.value.brands.length === 0 && filters.value.colors.length === 0 && filters.value.sizes.length === 0 && filters.value.sex.length === 0 && filters.value.prices.min === null && filters.value.prices.max === null) {
-        return false
-      }
-      return true;
-    });
-    function handlePriceInput(e) {
-      if(e.target.id === 'max-price'){
-        if(e.target.value === '') {
-          filters.value.prices.max = null;
+            if(filters.value.categories.length === 0 && filters.value.brands.length === 0 && filters.value.colors.length === 0 && filters.value.sizes.length === 0 && filters.value.sexes.length === 0 && filters.value.prices.min === null && filters.value.prices.max === null && filters.value.title === null) {
+                return false
+            }
+            return true;
+        });
+
+    function toggleFilter(filter,item) {
+        switch (filter) {
+            case 'categories':
+            if(filters.value.categories.includes(item)) {
+                filters.value.categories = filters.value.categories.filter((x) => x != item);
+            }
+            else 
+            {
+                filters.value.categories.push(item);
+            }
+            break;
+            case 'brands':
+            if(filters.value.brands.includes(item)) {
+                filters.value.brands = filters.value.brands.filter((x) => x != item);
+            }
+            else 
+            {
+                filters.value.brands.push(item);
+            }
+            break;
+            case 'sexes':
+            if(filters.value.sexes.includes(item)) {
+                filters.value.sexes = filters.value.sexes.filter((x) => x != item);
+            }
+            else 
+            {
+                filters.value.sexes.push(item);
+            }
+            break;
+            case 'colors':
+            if(filters.value.colors.includes(item)) {
+                filters.value.colors = filters.value.colors.filter((x) => x != item);
+            }
+            else 
+            {
+                filters.value.colors.push(item);
+            }
+            break;
+            case 'sizes':
+            if(filters.value.sizes.includes(item)) {
+                filters.value.sizes = filters.value.sizes.filter((x) => x != item);
+            }
+            else 
+            {
+                filters.value.sizes.push(item);
+            }
+            break;
         }
-      }
-      else {
-        if(e.target.value === '') {
-          filters.value.prices.min = null;
-        }
-      }
     }
+
+    function clearFilters() {
+        Object.keys(filters.value).forEach(function(key) {
+            if(Array.isArray(filters.value[key])) {
+            filters.value[key] = [];
+            }
+        });
+        filters.value['prices'].min = null;
+        filters.value['prices'].max = null;
+        filters.value['title'] = null;
+        requestParams.value = {};
+        fetchProducts()
+    }
+
+    function handleEmptyInputs(e) {
+        if(e.target.id === 'max-price'){
+            if(e.target.value === '') {
+                filters.value.prices.max = null;
+            }
+        }
+        else if(e.target.id === 'min-price') {
+            if(e.target.value === '') {
+                filters.value.prices.min = null;
+            }
+        }
+        else {
+            if(e.target.value === '') {
+                filters.value.title = null;
+            }
+        }
+    }
+
+    function filterProducts() {
+        requestParams.value = Object.assign(requestParams.value,{title: filters.value['title']})
+        requestParams.value = Object.assign(requestParams.value,{categories: filters.value['categories']})
+        requestParams.value = Object.assign(requestParams.value,{brands: filters.value['brands']})
+        requestParams.value = Object.assign(requestParams.value,{colors: filters.value['colors']})
+        requestParams.value = Object.assign(requestParams.value,{sizes: filters.value['sizes']})
+        requestParams.value = Object.assign(requestParams.value,{sexes: filters.value['sexes']})
+        if(filters.value['prices'].min)
+        requestParams.value = Object.assign(requestParams.value,{min_price: filters.value['prices'].min})
+        if(filters.value['prices'].max)
+        requestParams.value = Object.assign(requestParams.value,{max_price: filters.value['prices'].max})
+        fetchProducts()
+    }
+
     function changePage(num) {
       axios
-        .get("products", { params: { page: num } })
+        .get("search", { params: { per_page: perPage.value, page: num } })
         .then((response) => {
           products.value = response.data;
           page.value = num;
         })
         .catch((errors) => console.log(errors));
     }
-    function toggleFilter(filter,item) {
-      switch (filter) {
-        case 'categories':
-          if(filters.value.categories.includes(item)) {
-            filters.value.categories = filters.value.categories.filter((x) => x != item);
-          }
-          else 
-          {
-            filters.value.categories.push(item);
-          }
-          break;
-        case 'brands':
-          if(filters.value.brands.includes(item)) {
-            filters.value.brands = filters.value.brands.filter((x) => x != item);
-          }
-          else 
-          {
-            filters.value.brands.push(item);
-          }
-          break;
-        case 'sex':
-          if(filters.value.sex.includes(item)) {
-            filters.value.sex = filters.value.sex.filter((x) => x != item);
-          }
-          else 
-          {
-            filters.value.sex.push(item);
-          }
-          break;
-        case 'colors':
-          if(filters.value.colors.includes(item)) {
-            filters.value.colors = filters.value.colors.filter((x) => x != item);
-          }
-          else 
-          {
-            filters.value.colors.push(item);
-          }
-          break;
-        case 'sizes':
-          if(filters.value.sizes.includes(item)) {
-            filters.value.sizes = filters.value.sizes.filter((x) => x != item);
-          }
-          else 
-          {
-            filters.value.sizes.push(item);
-          }
-          break;
-      }
-    }
-    function clearFilters() {
-      Object.keys(filters.value).forEach(function(key) {
-        if(Array.isArray(filters.value[key])) {
-          filters.value[key] = [];
-        }
-        else {
-          filters.value[key].min = null;
-          filters.value[key].max = null;
-        }
-      });
-      queryFilters.value = {};
-    }
-    function filterProducts() {
-        queryFilters.value = Object.assign(queryFilters.value,{categories: filters.value['categories']})
-        queryFilters.value = Object.assign(queryFilters.value,{brands: filters.value['brands']})
-        queryFilters.value = Object.assign(queryFilters.value,{colors: filters.value['colors']})
-        queryFilters.value = Object.assign(queryFilters.value,{sizes: filters.value['sizes']})
-        queryFilters.value = Object.assign(queryFilters.value,{sex: filters.value['sex']})
-        if(filters.value['prices'].min)
-        queryFilters.value = Object.assign(queryFilters.value,{min_price: filters.value['prices'].min})
-        if(filters.value['prices'].max)
-        queryFilters.value = Object.assign(queryFilters.value,{max_price: filters.value['prices'].max})
-        queryFilters.value = Object.assign(queryFilters.value,{per_page: 12})
-      axios
-        .get('search',{params : queryFilters.value})
-        .then((response) => {
-          products.value = response.data;
-          totalPages.value = response.data.meta.last_page;
-          page.value = response.data.meta.current_page;
-        })
-        .catch(errors => console.log(errors))
+
+    function fetchProducts() {
+        requestParams.value = Object.assign(requestParams.value,{per_page: perPage.value});
+        axios
+            .get('search',{params : requestParams.value})
+            .then((response) => {
+                products.value = response.data;
+                totalPages.value = response.data.meta.last_page;
+                page.value = response.data.meta.current_page;
+                productsCount.value = response.data.meta.total;
+            })
+            .catch(errors => console.log(errors))
     }
     onMounted(() => {
-      axios
-        .get("products",{params: {per_page : 12}})
-        .then((response) => {
-          products.value = response.data;
-          totalPages.value = response.data.meta.last_page;
-          page.value = response.data.meta.current_page;
-        })
-        .catch((errors) => console.log(errors));
+      fetchProducts()
       axios
         .get("categories")
         .then((response) => {
@@ -403,6 +424,12 @@ export default {
           sizes.value = response.data;
         })
         .catch((errors) => console.log(errors));
+      axios
+        .get("sexes")
+        .then((response) => {
+          sexes.value = response.data;
+        })
+        .catch((errors) => console.log(errors));
     });
     return {
       products,
@@ -412,9 +439,11 @@ export default {
       brands,
       colors,
       sizes,
+      sexes,
       filters,
+      productsCount,
       isFiltered,
-      handlePriceInput,
+      handleEmptyInputs,
       changePage,
       toggleFilter,
       clearFilters,
@@ -664,7 +693,7 @@ export default {
   }
 }
 .shop .shop-container .shop-products .products-container {
-  min-height: 2035px;
+  min-height: 1620px;
   @apply flex flex-wrap justify-center content-start w-full;
 }
 .shop .shop-container .shop-products .products-container .product-card {
