@@ -11,8 +11,8 @@ const routes = [
         component: PageLayout,
         children: [
             { path: '/', component: Home },
-            { path: '/shop', component: Shop },
-            { path: '/products/:id', component: Product }
+            { path: '/products', component: Shop },
+            { path: '/products/:id',name: 'product-details', component: Product }
         ]
     },
     {path: '/sign-in', component: SignIn},

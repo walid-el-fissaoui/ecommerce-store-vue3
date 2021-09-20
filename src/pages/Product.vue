@@ -4,11 +4,11 @@
       <div class="main-container py-10">
         <div class="flex">
           <div class="breadcrumbs-content">
-            <h1>Lorem, ipsum.</h1>
+            <h1>{{product.title}}</h1>
             <div class="breadcrumbs-links">
-              <a href="/index.html">Home</a>
-              <a href="/index.html">Shop</a>
-              <span>Lorem, ipsum.</span>
+              <router-link to="/">Home</router-link>
+              <router-link to="/products">Shop</router-link>
+              <span>{{product.title}}</span>
             </div>
           </div>
         </div>
@@ -20,20 +20,19 @@
           <div class="w-full lg:w-6/12">
             <div class="mx-auto xl:mx-0" style="max-width: 500px">
               <img
+                v-if="product.images"
                 class="w-full"
-                :src="product.images[currentImage].src"
+                :src="product.images[currentImage].url"
                 alt=""
               />
               <div class="product-gallery">
                 <img
-                  v-for="image in product.images"
-                  :key="image.id"
-                  :src="image.src"
+                  v-for="(image,index) in product.images"
+                  :key="index"
+                  :src="image.url"
                   alt="product image"
-                  @click="switchImage(image.id)"
+                  @click="switchImage(index)"
                 />
-                <!-- <img src="../assets/images/product-image-2.jpg" />
-                <img src="../assets/images/product-image-3.jpg" /> -->
               </div>
             </div>
           </div>
@@ -122,20 +121,24 @@
               <p class="product-description">
                 {{ product.description }}
               </p>
-              <div class="characteristic">
-                <label>Category :</label>
-                <p class="font-light capitalize">{{product.category}}</p>
+              <div class="characteristic-tags mb-4">
+                <label class="block mb-2">Categories :</label>
+                <p class="font-light capitalize block">
+                  <span v-for="category in product.categories" :key="category.id" class="inline-block mr-2 mb-2 border rounded py-1 px-4">{{category.title}}</span>
+                </p>
               </div>
               <div class="characteristic">
                 <label>Sex :</label>
-                <p class="font-light capitalize">{{product.sex}}</p>
+                <p class="font-light capitalize">
+                  <span v-for="sex in product.sexes" :key="sex.id" class="inline-block mr-4 border rounded py-1 px-4">{{sex.title}}</span>
+                </p>
               </div>
               <div class="characteristic">
                 <label>Size :</label>
                 <div class="sizes-list">
-                  <div v-for="size in product.sizes" :key="size" class="size-checkbox">
-                    <input type="radio" name="check-size" :id="'check-size-' + size" />
-                    <label :for="'check-size-' + size">{{size}}</label>
+                  <div v-for="size in product.sizes" :key="size.id" class="size-checkbox">
+                    <input type="radio" name="check-size" :id="'check-size-' + size.title" />
+                    <label :for="'check-size-' + size.title">{{size.title}}</label>
                   </div>
                 </div>
                 <div></div>
@@ -143,7 +146,7 @@
               <div class="characteristic">
                 <label>Color :</label>
                 <ul class="colors-list">
-                  <li v-for="(color,index) in product.colors" :key="index" :class="(index == currentColor) ? 'active bg-' + color : 'bg-' + color" @click="switchColor(index)"></li>
+                  <li v-for="(color,index) in product.colors" :key="index" :class="(index == currentColor) ? 'active' : '' " :style="'background-color :' + color.hex_code" @click="switchColor(index)"></li>
                 </ul>
               </div>
               <div class="characteristic">
@@ -194,45 +197,22 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { onBeforeMount, ref } from "vue";
+import axios from "../plugins/axios";
+import {useRoute} from "vue-router";
 export default {
   setup() {
-    const product = ref({
-      id: "#0",
-      images: [
-        {
-          id: 1,
-          src: "/img/product-image-1.7450203f.jpg",
-        },
-        {
-          id: 2,
-          src: "/img/product-image-2.a4770d63.jpg",
-        },
-        {
-          id: 3,
-          src: "/img/product-image-1.7450203f.jpg",
-        },
-        {
-          id: 4,
-          src: "/img/product-image-3.3aa7e844.jpg",
-        },
-      ],
-      title: "Lorem, ipsum.",
-      description:
-        "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptate molestias expedita ut voluptatibus corporis aperiam blanditiis nisi, sit repudiandae in praesentium facilis ex ad optio asperiores voluptatum, eaque ab aspernatur?",
-      price: 13.3,
-      colors: ["blue-400", "red-400", "green-400"],
-      rating: "3",
-      category: "bags",
-      sex: "men",
-      sizes: ["s","lg","xl"]
-    });
+    const route = useRoute();
+    const product = ref({});
     const currentImage = ref(0);
     const currentColor = ref(0);
     const quantity = ref(1);
-    const totalPrice = ref(product.value.price);
+    const totalPrice = ref(0);
+    function switchColor(id) {
+      currentColor.value = id;
+    }
     function switchImage(id) {
-      currentImage.value = id - 1;
+      currentImage.value = id ;
     }
     function incrementQuantity() {
       if (quantity.value < 10) {
@@ -246,20 +226,16 @@ export default {
         totalPrice.value = (product.value.price * quantity.value).toFixed(2);
       }
     }
-    function switchColor(id) {
-      currentColor.value = id;
-    }
-    return {
-      product,
-      currentImage,
-      quantity,
-      totalPrice,
-      currentColor,
-      switchImage,
-      incrementQuantity,
-      decrementQuantity,
-      switchColor
-    };
+    onBeforeMount(()=>{
+      axios
+        .get('products/' + route.params.id)
+        .then((response) => {
+          product.value = response.data;
+          totalPrice.value = product.value.price;
+        })
+        .catch(errors => console.log(errors))
+    });
+    return {product,currentImage,currentColor,quantity,totalPrice,switchColor,switchImage,incrementQuantity,decrementQuantity}
   },
 };
 </script>
@@ -298,7 +274,8 @@ export default {
 .product-details .product-details-container .characteristic {
   @apply flex mb-4;
 }
-.product-details .product-details-container .characteristic > label {
+.product-details .product-details-container .characteristic > label,
+.product-details .product-details-container .characteristic-tags > label {
   width: 100px;
   @apply font-semibold text-base;
 }

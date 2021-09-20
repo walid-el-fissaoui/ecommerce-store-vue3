@@ -6,7 +6,7 @@
           <div class="breadcrumbs-content">
             <h1>Shop</h1>
             <div class="breadcrumbs-links">
-              <a href="/index.html">Home</a>
+              <router-link to="/">Home</router-link>
               <span>Shop</span>
             </div>
           </div>
@@ -180,7 +180,7 @@
               <p class="text-custom-color-3">Total : <span>{{productsCount}}</span></p> 
             </div>
             <div class="products-container">
-              <product-card v-for="product in products.data" :key="product.id">
+              <product-card v-for="product in products.data" :key="product.id" @click="productDetails(product.id)">
                 <template #image>
                   <img
                     :src="product.image !== null ? product.image.url : ' '"
@@ -249,10 +249,12 @@
 <script>
 import ProductCard from "../components/products/ProductCard.vue";
 import { computed, onMounted, ref } from "vue";
+import {useRouter} from "vue-router";
 import axios from "../plugins/axios";
 export default {
   components: { ProductCard },
   setup() {
+    const router = useRouter();
     const page = ref(0);
     const totalPages = ref(0);
     const perPage = ref(12);
@@ -280,6 +282,10 @@ export default {
             }
             return true;
         });
+
+    function productDetails(productId) {
+      router.push({name:'product-details',params: {id: productId}});
+    }
 
     function toggleFilter(filter,item) {
         switch (filter) {
@@ -447,7 +453,8 @@ export default {
       changePage,
       toggleFilter,
       clearFilters,
-      filterProducts
+      filterProducts,
+      productDetails
     };
   },
 };
@@ -697,7 +704,7 @@ export default {
   @apply flex flex-wrap justify-center content-start w-full;
 }
 .shop .shop-container .shop-products .products-container .product-card {
-  @apply w-full text-center px-8 mb-10;
+  @apply w-full text-center px-8 mb-10 cursor-pointer;
 }
 @screen sm {
   .shop .shop-container .shop-products .products-container .product-card {
