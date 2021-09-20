@@ -37,7 +37,7 @@
               </form>
             </div>
             <ul class="sidebar-filter">
-              <li :class="isFiltered ? 'active' : ''">
+              <li :class="isFiltered ? 'active' : ''" @click="filterProducts">
                 <svg
                   width="24"
                   height="24"
@@ -261,6 +261,7 @@ export default {
       sizes: [],
       prices: { min: null, max: null },
     });
+    const queryFilters = ref({});
     const isFiltered = computed(() => {
       if(filters.value.categories.length === 0 && filters.value.brands.length === 0 && filters.value.colors.length === 0 && filters.value.sizes.length === 0 && filters.value.sex.length === 0 && filters.value.prices.min === null && filters.value.prices.max === null) {
         return false
@@ -347,6 +348,27 @@ export default {
           filters.value[key].max = null;
         }
       });
+      queryFilters.value = {};
+    }
+    function filterProducts() {
+        queryFilters.value = Object.assign(queryFilters.value,{categories: filters.value['categories']})
+        queryFilters.value = Object.assign(queryFilters.value,{brands: filters.value['brands']})
+        queryFilters.value = Object.assign(queryFilters.value,{colors: filters.value['colors']})
+        queryFilters.value = Object.assign(queryFilters.value,{sizes: filters.value['sizes']})
+        queryFilters.value = Object.assign(queryFilters.value,{sex: filters.value['sex']})
+        if(filters.value['prices'].min)
+        queryFilters.value = Object.assign(queryFilters.value,{min_price: filters.value['prices'].min})
+        if(filters.value['prices'].max)
+        queryFilters.value = Object.assign(queryFilters.value,{max_price: filters.value['prices'].max})
+        queryFilters.value = Object.assign(queryFilters.value,{per_page: 12})
+      axios
+        .get('search',{params : queryFilters.value})
+        .then((response) => {
+          products.value = response.data;
+          totalPages.value = response.data.meta.last_page;
+          page.value = response.data.meta.current_page;
+        })
+        .catch(errors => console.log(errors))
     }
     onMounted(() => {
       axios
@@ -395,7 +417,8 @@ export default {
       handlePriceInput,
       changePage,
       toggleFilter,
-      clearFilters
+      clearFilters,
+      filterProducts
     };
   },
 };
@@ -641,7 +664,8 @@ export default {
   }
 }
 .shop .shop-container .shop-products .products-container {
-  @apply flex flex-wrap justify-center w-full;
+  min-height: 2035px;
+  @apply flex flex-wrap justify-center content-start w-full;
 }
 .shop .shop-container .shop-products .products-container .product-card {
   @apply w-full text-center px-8 mb-10;
