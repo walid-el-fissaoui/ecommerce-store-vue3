@@ -1,9 +1,11 @@
 import { createStore } from 'vuex'
 import auth from './modules/authentication'
+import cart from './modules/cart'
 
 const store = createStore({
     modules: {
-        auth
+        auth,
+        cart
     },
     state() {
         return {
