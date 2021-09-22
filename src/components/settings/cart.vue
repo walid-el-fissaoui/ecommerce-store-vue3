@@ -1,22 +1,20 @@
 <template>
-<h1 v-for="item in products" :key="item.id">{{item.quantity}}</h1>
-  <Productcard v-for="num in 3" :key="num">
+<!-- <h1 >{{item.quantity}}</h1> -->
+  <Productcard v-for="item in products" :key="item.id">
     <template #product-image>
-      <img src="https://via.placeholder.com/360x360.png/00ee11?text=animals+repellendus" alt="product-image" />
+      <img :src="item.image" alt="product-image" />
     </template>
     <template #product-title>
-      lorem ipsums
+      {{item.title}}
     </template>
     <template #product-price>
-      12.2$
+      {{item.price}}$
     </template>
     <template #product-quantity>
-      4
+      {{item.quantity}}
     </template>
     <template #product-colors>
-      <li style="background-color: red"></li>
-      <li style="background-color: green"></li>
-      <li style="background-color: yellow"></li>
+      <li v-for="color in item.colors" :key="color.id" style="background-color: red">{{color.color_hex}}</li>
     </template>
   </Productcard>
   <div class="flex justify-between items-center">
@@ -59,6 +57,7 @@
 //     return {products}
 //   }
 // };
+
 import {ref} from "vue";
 import {useStore} from "vuex";
 import Productcard from "../products/ProductCartCard.vue" ;
@@ -70,6 +69,29 @@ export default {
     return {products}
   }
 }
+
+// import {ref} from "vue";
+// // import {useStore} from "vuex";
+// import axios from "../../plugins/axios";
+// import Productcard from "../products/ProductCartCard.vue" ;
+// export default {
+//   components: {Productcard},
+//   setup() {
+//     // const store = useStore();
+//     const products = ref({});
+//     const data = {
+//         items: [1,2,3],
+//         colors: [1,2,3],
+//         sizes: [1,2,3]
+//     }
+//     axios.get("cart", {params: data})
+//       .then((response) => {
+//         console.log(response)
+//       })
+//       .catch(errors => console.log(errors))
+//     return {products}
+//   }
+// }
 </script>
 
 <style>

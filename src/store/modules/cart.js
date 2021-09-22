@@ -11,11 +11,20 @@ const state = () => ({
 const getters = {
     cartProducts: (state) => { 
         const products = ref({});
-        const itemsIds = state.items.map(({id}) => {return id})
+        const productsIds = state.items.map(({id}) => {return {id}})
+        const productsColors = state.items.map(({colors}) => {return {colors}})
+        const productsSizes = state.items.map(({sizes}) => {return {sizes}})
+        const data = {
+            items: productsIds,
+            colors :productsColors,
+            sizes :productsSizes
+        }
+        console.log(Object.values(productsColors));
         axios
-            .get("cart",{params: {ids: itemsIds}})
+            .get("cart",{params: data})
             .then((response) => {
                 products.value = response.data;
+                console.log(response.data);
                 products.value = products.value.map((item) => {
                     const product = state.items.find((element) => element.id === item.id)
                     return {
@@ -24,8 +33,8 @@ const getters = {
                         price: item.price,
                         image: item.image,
                         quantity: product.quantity,
-                        colors: product.colors,
-                        sizes: product.sizes
+                        colors: item.colors,
+                        sizes: item.sizes
                     }
                 })
             })
