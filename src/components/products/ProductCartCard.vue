@@ -17,22 +17,16 @@
       </ul>
     </div>
     <div class="w-1/12 quantity">
-      <button>
-        <i class="fas fa-minus"></i>
-      </button>
-      <span><slot name="product-quantity"></slot></span>
-      <button>
-        <i class="fas fa-plus"></i>
-      </button>
+      <slot name="product-quantity"></slot>
     </div>
     <div class="w-1/12">
       <h2 class="font-bold text-center">
         <slot name="product-price"></slot>
       </h2>
     </div>
-    <button class="w-2/12 text-xl">
-      <i class="far fa-times-circle"></i>
-    </button>
+    <div class="w-2/12 text-xl text-center">
+      <slot name="product-cancel"></slot>
+    </div>
   </div>
 </template>
 
@@ -44,8 +38,8 @@ export default {};
 img {
   @apply w-2/12;
 }
-.colors,.sizes {
-  @apply flex flex-col items-center;
+.colors ul,.sizes ul{
+  @apply flex flex-col items-center justify-center;
 }
 .colors ul li {
   @apply w-4 h-4 mb-2 rounded-full;

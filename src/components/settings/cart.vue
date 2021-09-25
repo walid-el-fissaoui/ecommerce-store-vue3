@@ -11,13 +11,24 @@
         {{item.price}}$
       </template>
       <template #product-quantity>
-        {{item.quantity}}
+        <button @click="decrement(item.id,item.quantity)">
+          <i class="fas fa-minus"></i>
+        </button>
+        <span>{{item.quantity}}</span>
+        <button @click="increment(item.id)">
+          <i class="fas fa-plus"></i>
+        </button>
       </template>
       <template #product-colors>
         <li v-for="color in item.colors" :key="color.id" :style="'background-color:' + color.color_hex"></li>
       </template>
       <template #product-sizes>
         <li v-for="size in item.sizes" :key="size.id">{{size.title}}</li>
+      </template>
+      <template #product-cancel>
+        <button @click="removeFromCart(item.id)">
+          <i class="far fa-times-circle"></i>
+        </button>
       </template>
     </Productcard>
     <div class="flex justify-between items-center">
@@ -50,17 +61,26 @@ export default {
       if(loading.value === false) {
         return products.value.reduce((total,product) => {
           return total + product.price * product.quantity;
-        },0)
+        },0).toFixed(2)
       }
       else {
         return 0;
       }
     });
-  
-    function get() {
-      console.log(totalPrice.value);
+
+    function increment(id) {
+      products.value.find(element => element.id === id).quantity++
     }
-    return {products,totalPrice,loading,get}
+
+    function decrement(id,quantity) {
+      if(quantity > 1)
+      products.value.find(element => element.id === id).quantity--
+    }
+
+    function removeFromCart(id) {
+      products.value = products.value.filter(element => element.id !== id)
+    }
+    return {products,totalPrice,loading,increment,decrement,removeFromCart}
   },
 };
 </script>
