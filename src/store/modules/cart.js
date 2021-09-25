@@ -1,5 +1,5 @@
-import { ref } from "vue";
-import axios from "../../plugins/axios";
+import {ref} from "vue";
+import axios from "../../plugins/axios"
 const state = () => ({
   cart: [1, 3, 5],
   items: [
@@ -57,7 +57,12 @@ const getters = {
       })
       .catch(errors => console.log(errors));
     return products;
-  }
+  },
+  // getCartTotalPrice: (state,getters) => {
+  //   const list = ref(getters.getCartProducts);
+  //   console.log(list.value);
+  //   // 
+  // }
 };
 const mutations = {
   setCartItem(state, payload) {

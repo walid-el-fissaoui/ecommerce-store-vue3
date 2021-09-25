@@ -11,6 +11,11 @@
         <slot name="product-colors"></slot>
       </ul>
     </div>
+    <div class="w-1/12 sizes">
+      <ul>
+        <slot name="product-sizes"></slot>
+      </ul>
+    </div>
     <div class="w-1/12 quantity">
       <button>
         <i class="fas fa-minus"></i>
@@ -39,11 +44,14 @@ export default {};
 img {
   @apply w-2/12;
 }
-.colors {
+.colors,.sizes {
   @apply flex flex-col items-center;
 }
 .colors ul li {
   @apply w-4 h-4 mb-2 rounded-full;
+}
+.sizes ul li {
+  @apply inline-block capitalize mr-2 mb-2 border rounded py-1 px-4;
 }
 .quantity {
   @apply flex justify-between text-custom-color-3;
