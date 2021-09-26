@@ -32,7 +32,7 @@
       </template>
     </Productcard>
     <div class="flex justify-between items-center">
-      <button class="btn btn-black">Checkout</button>
+      <button class="btn btn-black" @click="checkout">Checkout</button>
       <p>Total: <span class="font-bold">{{totalPrice}}$</span></p>
     </div>
   </div>
@@ -80,7 +80,11 @@ export default {
     function removeFromCart(id) {
       products.value = products.value.filter(element => element.id !== id)
     }
-    return {products,totalPrice,loading,increment,decrement,removeFromCart}
+
+    function checkout() {
+      store.dispatch('checkout',{products: products.value})
+    }
+    return {products,totalPrice,loading,increment,decrement,removeFromCart,checkout}
   },
 };
 </script>

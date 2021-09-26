@@ -57,20 +57,20 @@ const getters = {
       })
       .catch(errors => console.log(errors));
     return products;
-  },
-  // getCartTotalPrice: (state,getters) => {
-  //   const list = ref(getters.getCartProducts);
-  //   console.log(list.value);
-  //   // 
-  // }
+  }
 };
 const mutations = {
   setCartItem(state, payload) {
-    state.cart.push(payload.id)
+    state.items = payload.items
   },
 };
 const actions = {
-
+  checkout({commit,state},payload) {
+    console.log(payload.products)
+    console.log(state.items);
+    commit('setCartItem',{items: []})
+    console.log(state.items);
+  }
 };
 export default {
   state,
