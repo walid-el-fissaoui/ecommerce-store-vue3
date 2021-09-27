@@ -19,7 +19,12 @@
           <div class="shop-sidebar">
             <div class="sidebar-search">
               <form @submit.prevent="filterProducts">
-                <input type="text" placeholder="Search..."  @keyup.delete="handleEmptyInputs" v-model="filters.title"/>
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  @keyup.delete="handleEmptyInputs"
+                  v-model="filters.title"
+                />
                 <button>
                   <svg
                     width="24"
@@ -51,7 +56,11 @@
                 </svg>
                 <h3>filter</h3>
               </li>
-              <li v-if="isFiltered" class="justify-end active" @click="clearFilters">
+              <li
+                v-if="isFiltered"
+                class="justify-end active"
+                @click="clearFilters"
+              >
                 <svg
                   width="24"
                   height="24"
@@ -76,9 +85,11 @@
                     <li
                       v-for="category in categories"
                       :key="category.id"
-                      :class="filters.categories.includes(category.id) ? 'active' : ''"
+                      :class="
+                        filters.categories.includes(category.id) ? 'active' : ''
+                      "
                     >
-                      <a @click="toggleFilter('categories',category.id)">
+                      <a @click="toggleFilter('categories', category.id)">
                         {{ category.title }}
                         <span> ({{ category.products_count }}) </span>
                       </a>
@@ -92,8 +103,12 @@
                 </div>
                 <div class="panel-body">
                   <ul class="categories-list">
-                    <li v-for="brand in brands" :key="brand.id" :class="filters.brands.includes(brand.id) ? 'active' : ''">
-                      <a @click="toggleFilter('brands',brand.id)"
+                    <li
+                      v-for="brand in brands"
+                      :key="brand.id"
+                      :class="filters.brands.includes(brand.id) ? 'active' : ''"
+                    >
+                      <a @click="toggleFilter('brands', brand.id)"
                         >{{ brand.title }}
                         <span> ({{ brand.products_count }}) </span>
                       </a>
@@ -107,8 +122,12 @@
                 </div>
                 <div class="panel-body">
                   <ul class="categories-list">
-                    <li v-for="sex in sexes" :key="sex.id" :class="filters.sexes.includes(sex.id) ? 'active' : ''">
-                      <a @click="toggleFilter('sexes',sex.id)"
+                    <li
+                      v-for="sex in sexes"
+                      :key="sex.id"
+                      :class="filters.sexes.includes(sex.id) ? 'active' : ''"
+                    >
+                      <a @click="toggleFilter('sexes', sex.id)"
                         >{{ sex.title }}
                         <span> ({{ sex.products_count }}) </span>
                       </a>
@@ -122,8 +141,15 @@
                 </div>
                 <div class="panel-body">
                   <ul class="colors-list">
-                    <li v-for="color in colors" :key="color.id" :class="filters.colors.includes(color.id) ? 'active' : ''">
-                      <a @click="toggleFilter('colors',color.id)" :style="'background-color :' + color.color_hex"></a>
+                    <li
+                      v-for="color in colors"
+                      :key="color.id"
+                      :class="filters.colors.includes(color.id) ? 'active' : ''"
+                    >
+                      <a
+                        @click="toggleFilter('colors', color.id)"
+                        :style="'background-color :' + color.color_hex"
+                      ></a>
                     </li>
                   </ul>
                 </div>
@@ -134,8 +160,12 @@
                 </div>
                 <div class="panel-body">
                   <ul class="sizes-list">
-                    <li v-for="size in sizes" :key="size.id" :class="filters.sizes.includes(size.id) ? 'active' : ''">
-                      <a @click="toggleFilter('sizes',size.id)">
+                    <li
+                      v-for="size in sizes"
+                      :key="size.id"
+                      :class="filters.sizes.includes(size.id) ? 'active' : ''"
+                    >
+                      <a @click="toggleFilter('sizes', size.id)">
                         {{ size.title }}
                       </a>
                     </li>
@@ -177,18 +207,24 @@
           </div>
           <div class="shop-products">
             <div class="ml-7 mb-6">
-              <p class="text-custom-color-3">Total : <span>{{productsCount}}</span></p> 
+              <p class="text-custom-color-3">
+                Total : <span>{{ productsCount }}</span>
+              </p>
             </div>
             <div class="products-container">
-              <product-card v-for="product in products.data" :key="product.id" @click="productDetails(product.id)">
+              <product-card
+                v-for="product in products.data"
+                :key="product.id"
+                @click="productDetails(product.id)"
+              >
                 <template #image>
                   <img
-                    :src="product.image !== null ? product.image.url : ' '"
+                    :src="product.image !== null ? product.image : ' '"
                     alt="product-image"
                   />
                 </template>
                 <template #title>
-                  {{ product.title }} {{ product.id }}
+                  {{ product.title }} {{product.id}} {{product.category}}
                 </template>
                 <template #price>
                   {{ product.price }}
@@ -198,14 +234,17 @@
                     v-for="(color, index) in product.colors"
                     :key="index"
                     class="color"
-                    :style="'background-color:' + color.hex_code"
+                    :style="'background-color:' + color"
                   ></li>
                 </template>
               </product-card>
             </div>
             <div class="pagination-controls" v-if="totalPages > 1">
               <ul>
-                <li v-if="page !== 1 && totalPages > 2" @click="changePage(page - 1)">
+                <li
+                  v-if="page !== 1 && totalPages > 2"
+                  @click="changePage(page - 1)"
+                >
                   <i class="fas fa-chevron-left mr-2"></i>Prev
                 </li>
                 <li
@@ -234,7 +273,10 @@
                     {{ num }}
                   </span>
                 </li>
-                <li v-if="page !== totalPages && totalPages > 2" @click="changePage(page + 1)">
+                <li
+                  v-if="page !== totalPages && totalPages > 2"
+                  @click="changePage(page + 1)"
+                >
                   Next<i class="fas fa-chevron-right ml-2"></i>
                 </li>
               </ul>
@@ -249,7 +291,7 @@
 <script>
 import ProductCard from "../components/products/ProductCard.vue";
 import { computed, onMounted, ref } from "vue";
-import {useRouter} from "vue-router";
+import { useRouter } from "vue-router";
 import axios from "../plugins/axios";
 export default {
   components: { ProductCard },
@@ -266,27 +308,24 @@ export default {
     const sizes = ref({});
     const sexes = ref({});
     const filters = ref({
-        title: null,
-        categories: [],
-        brands: [],
-        sexes: [],
-        colors: [],
-        sizes: [],
-        prices: { min: null, max: null },
+      title: null,
+      categories: [],
+      brands: [],
+      sexes: [],
+      colors: [],
+      sizes: [],
+      prices: { min: null, max: null },
     });
     const requestParams = ref({});
-
     const isFiltered = computed(() => {
-            if(filters.value.categories.length === 0 && filters.value.brands.length === 0 && filters.value.colors.length === 0 && filters.value.sizes.length === 0 && filters.value.sexes.length === 0 && filters.value.prices.min === null && filters.value.prices.max === null && filters.value.title === null) {
-                return false
-            }
-            return true;
-        });
-
+        if(filters.value.categories.length === 0 && filters.value.brands.length === 0 && filters.value.colors.length === 0 && filters.value.sizes.length === 0 && filters.value.sexes.length === 0 && filters.value.prices.min === null && filters.value.prices.max === null && filters.value.title === null) {
+            return false
+        }
+        return true;
+    });
     function productDetails(productId) {
       router.push({name:'product-details',params: {id: productId}});
     }
-
     function toggleFilter(filter,item) {
         switch (filter) {
             case 'categories':
@@ -336,7 +375,6 @@ export default {
             break;
         }
     }
-
     function clearFilters() {
         Object.keys(filters.value).forEach(function(key) {
             if(Array.isArray(filters.value[key])) {
@@ -349,7 +387,6 @@ export default {
         requestParams.value = {};
         fetchProducts()
     }
-
     function handleEmptyInputs(e) {
         if(e.target.id === 'max-price'){
             if(e.target.value === '') {
@@ -367,7 +404,6 @@ export default {
             }
         }
     }
-
     function filterProducts() {
         requestParams.value = Object.assign(requestParams.value,{title: filters.value['title']})
         requestParams.value = Object.assign(requestParams.value,{categories: filters.value['categories']})
@@ -381,18 +417,19 @@ export default {
         requestParams.value = Object.assign(requestParams.value,{max_price: filters.value['prices'].max})
         fetchProducts()
     }
-
     function changePage(num) {
+      requestParams.value = Object.assign(requestParams.value,{per_page: perPage.value});
+      requestParams.value = Object.assign(requestParams.value,{page: num});
       axios
-        .get("search", { params: { per_page: perPage.value, page: num } })
+        .get("search", { params: requestParams.value })
         .then((response) => {
           products.value = response.data;
           page.value = num;
         })
         .catch((errors) => console.log(errors));
     }
-
     function fetchProducts() {
+        delete requestParams.value.page;
         requestParams.value = Object.assign(requestParams.value,{per_page: perPage.value});
         axios
             .get('search',{params : requestParams.value})
@@ -405,7 +442,7 @@ export default {
             .catch(errors => console.log(errors))
     }
     onMounted(() => {
-      fetchProducts()
+      fetchProducts();
       axios
         .get("categories")
         .then((response) => {
@@ -438,23 +475,24 @@ export default {
         .catch((errors) => console.log(errors));
     });
     return {
-      products,
-      page,
-      totalPages,
+      productDetails,
       categories,
       brands,
       colors,
       sizes,
       sexes,
-      filters,
+      products,
+      page,
+      totalPages,
       productsCount,
+      filters,
       isFiltered,
-      handleEmptyInputs,
-      changePage,
       toggleFilter,
       clearFilters,
+      handleEmptyInputs,
       filterProducts,
-      productDetails
+      fetchProducts,
+      changePage
     };
   },
 };
@@ -648,8 +686,8 @@ export default {
   ul.sizes-list
   li.active
   a {
-    @apply bg-black text-white;
-  }
+  @apply bg-black text-white;
+}
 .shop
   .shop-container
   .shop-sidebar
