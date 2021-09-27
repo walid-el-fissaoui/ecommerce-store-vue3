@@ -19,11 +19,11 @@
           <i class="fas fa-plus"></i>
         </button>
       </template>
-      <template #product-colors>
-        <li v-for="color in item.colors" :key="color.id" :style="'background-color:' + color.color_hex"></li>
+      <template #product-color>
+        <span :style="'background-color:' + item.color"></span>
       </template>
-      <template #product-sizes>
-        <li v-for="size in item.sizes" :key="size.id">{{size.title}}</li>
+      <template #product-size>
+          {{item.size}}
       </template>
       <template #product-cancel>
         <button @click="removeFromCart(item.id)">
@@ -82,9 +82,10 @@ export default {
     }
 
     function checkout() {
+      // console.log("checkout");
       store.dispatch('checkout',{products: products.value})
     }
-    return {products,totalPrice,loading,increment,decrement,removeFromCart,checkout}
+    return{products,totalPrice,loading,increment,decrement,removeFromCart,checkout}
   },
 };
 </script>
