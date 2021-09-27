@@ -22,14 +22,14 @@
               <img
                 v-if="product.images"
                 class="w-full"
-                :src="product.images[currentImage].url"
+                :src="product.images[currentImage]"
                 alt=""
               />
               <div class="product-gallery">
                 <img
                   v-for="(image,index) in product.images"
                   :key="index"
-                  :src="image.url"
+                  :src="image"
                   alt="product image"
                   @click="switchImage(index)"
                 />
@@ -124,21 +124,21 @@
               <div class="characteristic-tags mb-4">
                 <label class="block mb-2">Categories :</label>
                 <p class="font-light capitalize block">
-                  <span v-for="category in product.categories" :key="category.id" class="inline-block mr-2 mb-2 border rounded py-1 px-4">{{category.title}}</span>
+                  <span class="inline-block mr-2 mb-2 border rounded py-1 px-4">{{product.category}}</span>
                 </p>
               </div>
               <div class="characteristic">
                 <label>Sex :</label>
                 <p class="font-light capitalize">
-                  <span v-for="sex in product.sexes" :key="sex.id" class="inline-block mr-4 border rounded py-1 px-4">{{sex.title}}</span>
+                  <span v-for="(sex,index) in product.sexes" :key="index" class="inline-block mr-4 border rounded py-1 px-4">{{sex}}</span>
                 </p>
               </div>
               <div class="characteristic">
                 <label>Size :</label>
                 <div class="sizes-list">
-                  <div v-for="size in product.sizes" :key="size.id" class="size-checkbox">
-                    <input type="radio" name="check-size" :id="'check-size-' + size.title" />
-                    <label :for="'check-size-' + size.title">{{size.title}}</label>
+                  <div v-for="(size,index) in product.sizes" :key="index" class="size-checkbox">
+                    <input type="radio" name="check-size" :id="'check-size-' + size" />
+                    <label :for="'check-size-' + size">{{size}}</label>
                   </div>
                 </div>
                 <div></div>
@@ -146,7 +146,7 @@
               <div class="characteristic">
                 <label>Color :</label>
                 <ul class="colors-list">
-                  <li v-for="(color,index) in product.colors" :key="index" :class="(index == currentColor) ? 'active' : '' " :style="'background-color :' + color.hex_code" @click="switchColor(index)"></li>
+                  <li v-for="(color,index) in product.colors" :key="index" :class="(index == currentColor) ? 'active' : '' " :style="'background-color :' + color" @click="switchColor(index)"></li>
                 </ul>
               </div>
               <div class="characteristic">
