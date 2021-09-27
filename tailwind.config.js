@@ -11,6 +11,8 @@ module.exports = {
         "custom-color-5": "#F3F2EE",
         "custom-color-6": "#212529",
         "custom-color-7": "#e5e5e5",
+        "custom-color-8": "#F8FAFC",
+        "custom-color-9": "#697B8B",
       },
       fontFamily: {
         "inter": ["Inter", "sans-serif"],

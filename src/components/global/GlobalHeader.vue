@@ -1,22 +1,6 @@
 <template>
   <header>
-    <div class="top-bar">
-      <div class="main-container py-3">
-        <div class="top-bar-container">
-          <p>Free shipping, 30-day return or refund guarantee.</p>
-          <div class="auth-box">
-            <div v-if="!userToken">
-              <router-link to="/sign-in">sign in</router-link>
-              <span> / </span>
-              <router-link to="/sign-up">sign up</router-link>
-            </div>
-            <div v-else>
-              <a class="cursor-pointer" @click="logout">logout</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <UpperBar></UpperBar>
     <nav class="bg-white">
       <div class="navbar-container main-container py-5">
         <div class="sidebar-toggle-box">
@@ -95,55 +79,13 @@
 </template>
 
 <script>
-import axios from "../../plugins/axios";
+import UpperBar from "../../components/global/UpperBar.vue";
 export default {
-  computed: {
-    userToken() {
-      return this.$store.state.auth.user_token
-    }
-  },
-  methods: {
-    logout() {
-      const config = {
-        headers: {
-          'Accept': 'application/json',
-          Authorization: `Bearer ${this.userToken}`
-        }
-      }
-      axios
-        .post("logout",{token: this.userToken},config)
-        .then(
-          () => {
-            this.$store.commit("setUserToken",{user_token: null});
-            this.$store.commit("setUser",{user: null});
-          }
-        )
-        .catch(errors => console.log(errors));
-    }
-  }
+  components: {UpperBar},
 };
 </script>
 
 <style>
-header .top-bar {
-  @apply bg-black text-white;
-}
-header .top-bar .top-bar-container {
-  @apply text-center text-sm;
-}
-@screen lg {
-  header .top-bar .top-bar-container {
-    @apply flex justify-between items-center text-left;
-  }
-}
-header .top-bar .top-bar-container .auth-box {
-  @apply uppercase hidden;
-}
-@screen lg {
-  header .top-bar .top-bar-container .auth-box {
-    @apply block;
-  }
-}
 header nav .navbar-container {
   @apply flex justify-between items-center;
 }
