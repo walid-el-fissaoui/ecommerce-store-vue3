@@ -9,9 +9,9 @@
                     </router-link>
                 </li>
                 <li class="active">
-                    <a>
+                    <router-link to="/dashboard/products">
                         <span>Products</span>
-                    </a>
+                    </router-link>
                 </li>
                 <li>
                     <a>

@@ -8,6 +8,7 @@ import SignUp from "../pages/SignUp.vue"
 import Settings from "../pages/Settings.vue"
 import Dashboard from "../pages/admin/Dashboard.vue"
 import Users from "../pages/admin/Users.vue"
+import Products from "../pages/admin/Products.vue"
 const routes = [
     {
         path: '/',
@@ -25,7 +26,8 @@ const routes = [
         path: '/dashboard',
         component: Dashboard,
         children: [
-            { path: 'users', component: Users}
+            { path: 'users', component: Users},
+            { path: 'products', component: Products},
         ]
     }
 ]
