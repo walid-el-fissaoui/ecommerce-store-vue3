@@ -25,7 +25,7 @@
       </div>
     </div>
     <div class="block w-full overflow-x-auto">
-      <table class="items-center w-full border-collapse ">
+      <table class="items-center w-full border-collapse">
         <thead>
           <tr>
             <th class="px-6 bg-custom-color-8 text-custom-color-9 align-middle border border-solid border-custom-color-8 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Name</th>

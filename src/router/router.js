@@ -9,6 +9,7 @@ import Settings from "../pages/Settings.vue"
 import Dashboard from "../pages/admin/Dashboard.vue"
 import Users from "../pages/admin/Users.vue"
 import Products from "../pages/admin/Products.vue"
+import AddProduct from "../pages/admin/AddProduct.vue"
 const routes = [
     {
         path: '/',
@@ -28,6 +29,7 @@ const routes = [
         children: [
             { path: 'users', component: Users},
             { path: 'products', component: Products},
+            { path: 'products/add', component: AddProduct},
         ]
     }
 ]
