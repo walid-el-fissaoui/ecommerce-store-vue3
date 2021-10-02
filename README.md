@@ -1,4 +1,12 @@
 # ecommerce-store-vue3
+This is the front end of the ecommerce store project
+and This is some screenshots from the project : 
+![alt text]()
+![alt text]()
+![alt text]()
+![alt text]()
+
+# ecommerce-store-vue3
 
 ## Project setup
 ```
